@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stock/services/rest_api.dart';
 import 'package:flutter_stock/themes/styles.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+// import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -14,8 +16,11 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   String email, password;
+
+  // Loading...
   bool _isLoading = false;
 
+  // Alert Dialog
   showAlertDialog(BuildContext context, String msg) {
     AlertDialog alert = AlertDialog(
       title: Text('Login Status'),
@@ -131,8 +136,6 @@ class _LoginScreenState extends State<LoginScreen> {
               borderRadius: BorderRadius.circular(30.0),
             ),
             onPressed: _login,
-            // print('$email \n $password');
-
             child: Padding(
               padding:
                   const EdgeInsets.symmetric(horizontal: 40.0, vertical: 10.0),
@@ -187,10 +190,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     blurRadius: 6.0)
               ],
             ),
-            child: Icon(
-              FontAwesomeIcons.facebookF,
-              color: Colors.white,
-            ),
+            // child: Icon(
+            //   Icons.ac_unit,
+            //   // FontAwesomeIcons.facebookF,
+            //   color: Colors.white,
+            // ),
+            child: IconButton(
+                // Use the FaIcon Widget + FontAwesomeIcons class for the IconData
+                icon: FaIcon(FontAwesomeIcons.facebookF),
+                onPressed: () {
+                  print("Pressed");
+                }),
           ),
         ),
         SizedBox(
@@ -211,10 +221,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     blurRadius: 6.0)
               ],
             ),
-            child: Icon(
-              FontAwesomeIcons.google,
-              color: Colors.white,
-            ),
+            // child: Icon(
+            //   Icons.ac_unit,
+            //   // FontAwesomeIcons.google,
+            //   color: Colors.white,
+            // ),
+            child: IconButton(
+                // Use the FaIcon Widget + FontAwesomeIcons class for the IconData
+                icon: FaIcon(FontAwesomeIcons.google),
+                onPressed: () {
+                  print("Pressed");
+                }),
           ),
         )
       ],
@@ -316,18 +333,13 @@ class _LoginScreenState extends State<LoginScreen> {
       ),
     );
   }
-//   void login(){
-//   var userdata {
-//     'email':mailController.text,
-//     'password':passwordController.text,
-//   };
-//   print(userdata);
 
-// }
-
+  // ส่วนของการเขียน login การ Login
   void _login() async {
+    // สร้างตัวเก็บข้อมูลแบบ SharedPreferences
     SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
 
+    // แสดง Loading
     setState(() {
       _isLoading = true;
     });
@@ -338,30 +350,32 @@ class _LoginScreenState extends State<LoginScreen> {
       'password': passwordController.text
     };
 
+    // Call API
     var response = await CallAPI().postData(userData, 'login');
-    var body = jsonDecode(response.body);
+    var body = json.decode(response.body);
     print(body);
-    
-    // การสร้างตัวแปรเก็บลง sharedPreferences
-
 
     if (body['success']) {
+      // ซ่อน Loading
       setState(() {
         _isLoading = false;
       });
-      showAlertDialog(context, "Login Success");
-    sharedPreferences.setString("storeName", body['data']['name']);
-    sharedPreferences.setString("storeEmail", body['data']['email']);
-      Navigator.pushNamed(context, '/dashboard');
       // print('Login success');
+      showAlertDialog(context, "Login Success");
+
+      // การสร้างตัวแปรเก็บลง sharedPreferences
+      sharedPreferences.setString("storeName", body['data']['name']);
+      sharedPreferences.setString("storeEmail", body['data']['email']);
+
+      // ส่งไปหน้า dashboard
+      Navigator.pushNamed(context, '/dashboard');
     } else {
+      // ซ่อน Loading
       setState(() {
         _isLoading = false;
       });
       // print('Login fail');
-      showAlertDialog(context, "Login fail");
+      showAlertDialog(context, "Login Fail!");
     }
-
-    //  print(userData);
   }
 }
