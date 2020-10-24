@@ -64,11 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     children: <Widget>[
                       SizedBox(
-                        height: 24,
+                        height: 15,
                       ),
                       Icon(
                         IconData[index],
-                        size: 30.0,
+                        size: 20.0,
                         color: Colors.white,
                       ),
                       // Image.asset(
